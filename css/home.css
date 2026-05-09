@@ -52,6 +52,26 @@
   .hero__meta { font-size: 0.8125rem; }
 }
 
+/* Page hero variant — left-aligned, compact gap before the next section
+   (used on Service / Process). */
+.hero--page {
+  padding-block: 7rem 1.5rem;
+}
+
+.hero--page .hero__inner {
+  max-width: 105rem;
+  text-align: left;
+}
+
+.section-about.section-about--flush-top {
+  padding-top: 1.5rem;
+}
+
+@media (max-width: 991px) {
+  .hero--page { padding-block: 4.5rem 1rem; }
+  .section-about.section-about--flush-top { padding-top: 1rem; }
+}
+
 /* ==========================================================================
    Home - Design Preview (horizontal scroll showcase)
    ========================================================================== */
@@ -359,4 +379,230 @@
   .section-about__inner {
     padding: 3rem 2rem;
   }
+}
+
+/* ==========================================================================
+   Simple numbered list (Service / Process pages)
+   ========================================================================== */
+
+.simple-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.simple-list__item {
+  display: flex;
+  gap: 2.5rem;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.simple-list__item:first-child {
+  padding-top: 0.5rem;
+}
+
+.simple-list__item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0.5rem;
+}
+
+.simple-list__num {
+  flex: 0 0 4rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.04em;
+  color: var(--color-gray-400);
+  padding-top: 0.25rem;
+}
+
+.simple-list__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.simple-list__title {
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-strong);
+  font-family: var(--font-kr);
+}
+
+.simple-list__desc {
+  font-size: var(--fs-medium);
+  color: var(--color-text);
+  line-height: var(--lh-loose);
+}
+
+@media (max-width: 767px) {
+  .simple-list__item {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem 0;
+  }
+  .simple-list__num {
+    flex: 0 0 auto;
+    padding-top: 0;
+  }
+}
+
+/* ==========================================================================
+   Bottom CTA section (Service / Process pages)
+   ========================================================================== */
+
+.section-cta {
+  padding-block: 5rem;
+  padding-inline: var(--container-padding-x);
+  text-align: center;
+}
+
+.section-cta__inner {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.section-cta__title {
+  margin-bottom: 0.75rem;
+  font-size: 1.75rem;
+  font-weight: var(--fw-semibold);
+  font-family: var(--font-kr);
+  color: var(--color-text-strong);
+}
+
+.section-cta__desc {
+  margin-bottom: 1.75rem;
+  font-size: var(--fs-medium);
+  line-height: var(--lh-relaxed);
+  color: var(--color-text);
+}
+
+.section-cta__btn {
+  font-size: var(--fs-medium);
+  padding: 0.875rem 1.5rem;
+}
+
+/* ==========================================================================
+   Generic content section (white bg) used on Service / Process pages
+   ========================================================================== */
+
+.section-block {
+  padding-block: 5rem;
+  padding-inline: var(--container-padding-x);
+}
+
+.section-block__inner {
+  max-width: 105rem;
+  margin-inline: auto;
+}
+
+.section-block__title {
+  margin-bottom: 0.75rem;
+  font-size: 2rem;
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-tight);
+}
+
+.section-block__sub {
+  margin-bottom: 2.5rem;
+  font-size: var(--fs-medium);
+  color: var(--color-text);
+  line-height: var(--lh-relaxed);
+  max-width: 45rem;
+}
+
+/* Sub-content (chip lists) inside simple-list items */
+.simple-list__sub {
+  margin-top: 1.25rem;
+}
+
+.simple-list__sub-label {
+  display: block;
+  margin-bottom: 0.625rem;
+  font-size: var(--fs-small);
+  letter-spacing: 0.02em;
+  color: var(--color-gray-400);
+}
+
+.simple-list__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.simple-list__chips li {
+  display: inline-flex;
+  padding: 6px 12px;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-small);
+  color: var(--color-text);
+  background-color: var(--color-white);
+  font-family: var(--font-kr);
+}
+
+.simple-list__chips--muted li {
+  color: var(--color-text-muted);
+  background-color: var(--color-gray-soft);
+  border-color: transparent;
+}
+
+/* Inline badge inside a simple-list title (e.g., "별도 비용") */
+.simple-list__badge {
+  display: inline-flex;
+  margin-left: 0.5rem;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  font-size: var(--fs-tiny);
+  font-weight: var(--fw-regular);
+  font-family: var(--font-kr);
+  color: var(--color-text-muted);
+  vertical-align: middle;
+  letter-spacing: 0;
+}
+
+/* Two-column scope grid on Service page */
+.scope-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.scope-grid__col {
+  background-color: var(--color-gray-soft);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.scope-grid__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.scope-grid__title {
+  font-size: 1.125rem;
+  font-weight: var(--fw-semibold);
+  font-family: var(--font-kr);
+  color: var(--color-text-strong);
+}
+
+.scope-grid__hint {
+  font-size: var(--fs-small);
+  color: var(--color-gray-400);
+}
+
+@media (max-width: 767px) {
+  .scope-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .scope-grid__col { padding: 1.75rem; }
 }

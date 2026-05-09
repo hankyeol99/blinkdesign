@@ -383,7 +383,7 @@
         get("description"),
       ];
 
-      const subject = `[blinkdesign 문의] ${data.get("project-type") || ""}`.trim();
+      const subject = `[BlinkDesign 문의] ${data.get("project-type") || ""}`.trim();
       const body = lines.join("\n");
       window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     });

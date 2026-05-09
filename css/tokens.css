@@ -49,10 +49,12 @@
   --max-width-small:   30rem;     /* 480 */
   --container-padding-x: 64px;
 
-  /* Typography - families */
-  --font-sans: "Inter", "Pretendard", "Noto Sans KR", system-ui, -apple-system,
-               "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-kr:   "Pretendard", "Noto Sans KR", "Inter", system-ui, sans-serif;
+  /* Typography - families
+     Inter first so Latin/numbers render in Inter; Korean falls through
+     to Wanted Sans Variable. */
+  --font-sans: "Inter", "Wanted Sans Variable", "Noto Sans KR", system-ui,
+               -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-kr:   "Inter", "Wanted Sans Variable", "Noto Sans KR", system-ui, sans-serif;
 
   /* Typography - sizes (rem-based) */
   --fs-h1: 4rem;       /* 64 */
