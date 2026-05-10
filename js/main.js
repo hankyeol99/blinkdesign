@@ -280,24 +280,39 @@
   let lastFocusedTrigger = null;
 
   const FORM_GROUPS = [
-    { name: "project-type", label: "어떤 작업이 필요하신가요?", required: true,
+    { name: "project-type", label: "어떤 작업이 필요하신가요?", required: true, type: "radio",
       options: ["랜딩페이지", "회사 홈페이지", "브랜드 사이트", "기존 사이트 리디자인", "기타"] },
-    { name: "purpose", label: "웹사이트의 주된 목적은 무엇인가요?", required: true,
+    { name: "purpose", label: "웹사이트의 주된 목적은 무엇인가요?", required: true, type: "radio",
       options: ["문의 증가", "서비스 소개", "브랜드 신뢰도 강화", "제품 판매", "광고 전환", "기타"] },
-    { name: "scope", label: "필요한 작업 범위", required: true,
+    { name: "scope", label: "필요한 작업 범위", required: true, type: "radio",
       options: ["디자인만", "디자인+개발", "기존 사이트 수정", "배포까지", "아직 모르겠음"] },
-    { name: "budget", label: "예상 예산 범위", required: true,
+    { name: "budget", label: "예상 예산 범위", required: true, type: "radio",
       options: ["50만 원 이하", "50~100만 원", "100~200만 원", "200~300만 원", "300만 원 이상", "미정"] },
-    { name: "timeline", label: "희망 오픈 일정", required: true,
+    { name: "timeline", label: "희망 오픈 일정", required: true, type: "radio",
       options: ["1주 이내", "2주 이내", "1개월 이내", "협의 가능"] },
   ];
 
-  const renderChipGroup = (g, type) =>
-    `<div class="contact-modal__chip-group" role="${type === "radio" ? "radiogroup" : "group"}">
+  const pad2 = (n) => String(n).padStart(2, "0");
+
+  const fieldHead = (num, label, required) => `
+    <legend class="contact-modal__field-head">
+      <span class="contact-modal__field-num">${pad2(num)}</span>
+      <span class="contact-modal__field-q">${label}${required ? ' <span class="contact-modal__req" aria-hidden="true">*</span>' : ""}</span>
+    </legend>`;
+
+  const labelHead = (num, label, htmlFor, required) => `
+    <label class="contact-modal__field-head" for="${htmlFor}">
+      <span class="contact-modal__field-num">${pad2(num)}</span>
+      <span class="contact-modal__field-q">${label}${required ? ' <span class="contact-modal__req" aria-hidden="true">*</span>' : ""}</span>
+    </label>`;
+
+  const renderOptionList = (g) =>
+    `<div class="contact-modal__options" role="${g.type === "radio" ? "radiogroup" : "group"}">
       ${g.options.map((opt) => `
-        <label class="contact-modal__chip">
-          <input type="${type}" name="${g.name}" value="${opt}"${g.required && type === "radio" ? " required" : ""}>
-          <span>${opt}</span>
+        <label class="contact-modal__option">
+          <input type="${g.type}" name="${g.name}" value="${opt}"${g.required && g.type === "radio" ? " required" : ""}>
+          <span class="contact-modal__option-indicator" aria-hidden="true"></span>
+          <span class="contact-modal__option-label">${opt}</span>
         </label>
       `).join("")}
     </div>`;
@@ -310,14 +325,14 @@
     root.setAttribute("aria-labelledby", "contact-modal-title");
     root.setAttribute("aria-hidden", "true");
 
-    const radioFields = FORM_GROUPS.map((g) => `
+    const radioFields = FORM_GROUPS.map((g, i) => `
       <fieldset class="contact-modal__field">
-        <legend class="contact-modal__label">${g.label}${g.required ? ' <span class="contact-modal__req" aria-hidden="true">*</span>' : ""}</legend>
-        ${renderChipGroup(g, "radio")}
+        ${fieldHead(i + 1, g.label, g.required)}
+        ${renderOptionList(g)}
       </fieldset>
     `).join("");
 
-    const materials = { name: "materials", required: false,
+    const materials = { name: "materials", required: false, type: "checkbox",
       options: ["로고", "브랜드 가이드", "텍스트", "이미지", "기존 사이트", "없음"] };
 
     root.innerHTML = `
@@ -335,17 +350,17 @@
           ${radioFields}
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-reference">참고하고 싶은 사이트가 있다면 알려주세요</label>
+            ${labelHead(6, "참고하고 싶은 사이트가 있다면 알려주세요", "cm-reference", false)}
             <input id="cm-reference" name="reference" class="contact-modal__input" type="text" placeholder="URL 또는 간단한 설명" autocomplete="off">
           </div>
 
           <fieldset class="contact-modal__field">
-            <legend class="contact-modal__label">현재 준비된 자료가 있나요?</legend>
-            ${renderChipGroup(materials, "checkbox")}
+            ${fieldHead(7, "현재 준비된 자료가 있나요?", false)}
+            ${renderOptionList(materials)}
           </fieldset>
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-description">프로젝트에 대해 간단히 설명해주세요</label>
+            ${labelHead(8, "프로젝트에 대해 간단히 설명해주세요", "cm-description", false)}
             <textarea id="cm-description" name="description" class="contact-modal__textarea" rows="5" placeholder="현재 상황, 필요한 페이지, 원하는 분위기, 고민 중인 부분 등을 자유롭게 적어주세요."></textarea>
           </div>
 

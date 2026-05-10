@@ -720,7 +720,7 @@
 
 /* Contact modal — inquiry form variant */
 .contact-modal__panel--form {
-  width: min(600px, 100%);
+  width: min(640px, 100%);
   max-height: 90vh;
   overflow-y: auto;
   padding: 36px 32px 28px;
@@ -729,27 +729,44 @@
 .contact-modal__form {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 32px;
   margin-top: 8px;
 }
 
 .contact-modal__field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
   border: 0;
   padding: 0;
   margin: 0;
   min-width: 0;
 }
 
-.contact-modal__label {
-  display: block;
+/* Numbered section header (used by both <legend> and <label>) */
+.contact-modal__field-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 0;
+  cursor: default;
+}
+
+.contact-modal__field-num {
+  flex-shrink: 0;
+  font-family: var(--font-sans);
   font-size: var(--fs-small);
   font-weight: var(--fw-medium);
-  color: var(--color-black);
+  letter-spacing: 0.04em;
+  color: var(--color-gray-400);
+}
+
+.contact-modal__field-q {
+  font-family: var(--font-kr);
+  font-size: 1rem;
+  font-weight: var(--fw-semibold);
   line-height: var(--lh-snug);
-  padding: 0;
+  color: var(--color-text-strong);
 }
 
 .contact-modal__req {
@@ -758,52 +775,116 @@
   margin-left: 2px;
 }
 
-.contact-modal__chip-group {
+/* Option list (radio cards / checkbox cards) */
+.contact-modal__options {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 6px;
 }
 
-.contact-modal__chip {
+.contact-modal__option {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 10px;
+  background-color: var(--color-white);
   cursor: pointer;
   user-select: none;
+  transition: border-color var(--duration-fast) var(--ease),
+              background-color var(--duration-fast) var(--ease);
 }
 
-.contact-modal__chip input {
+.contact-modal__option input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
   inset: 0;
 }
 
-.contact-modal__chip span {
-  display: inline-flex;
-  align-items: center;
-  padding: 7px 13px;
-  border: 1px solid var(--color-gray-200);
-  border-radius: var(--radius-pill);
-  font-family: var(--font-kr);
-  font-size: var(--fs-small);
-  color: var(--color-text);
+.contact-modal__option-indicator {
+  position: relative;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--color-gray-300);
   background-color: var(--color-white);
-  transition: background-color var(--duration-fast) var(--ease),
-              color var(--duration-fast) var(--ease),
-              border-color var(--duration-fast) var(--ease);
+  transition: border-color var(--duration-fast) var(--ease),
+              background-color var(--duration-fast) var(--ease);
 }
 
-.contact-modal__chip:hover span {
-  border-color: var(--color-gray-400);
-  color: var(--color-black);
+/* Radio: circle + filled dot when checked */
+.contact-modal__option input[type="radio"] + .contact-modal__option-indicator {
+  border-radius: 50%;
+}
+.contact-modal__option input[type="radio"] + .contact-modal__option-indicator::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background-color: var(--color-black);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease);
+}
+.contact-modal__option input[type="radio"]:checked + .contact-modal__option-indicator {
+  border-color: var(--color-black);
+}
+.contact-modal__option input[type="radio"]:checked + .contact-modal__option-indicator::after {
+  opacity: 1;
 }
 
-.contact-modal__chip input:checked + span {
+/* Checkbox: rounded square + checkmark when checked */
+.contact-modal__option input[type="checkbox"] + .contact-modal__option-indicator {
+  border-radius: 4px;
+}
+.contact-modal__option input[type="checkbox"] + .contact-modal__option-indicator::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid var(--color-white);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease);
+}
+.contact-modal__option input[type="checkbox"]:checked + .contact-modal__option-indicator {
   background-color: var(--color-black);
   border-color: var(--color-black);
-  color: var(--color-white);
+}
+.contact-modal__option input[type="checkbox"]:checked + .contact-modal__option-indicator::after {
+  opacity: 1;
 }
 
-.contact-modal__chip input:focus-visible + span {
+.contact-modal__option-label {
+  font-family: var(--font-kr);
+  font-size: var(--fs-medium);
+  line-height: var(--lh-snug);
+  color: var(--color-text);
+}
+
+/* Hover */
+.contact-modal__option:hover {
+  border-color: var(--color-gray-400);
+}
+
+/* Selected card emphasis (modern browsers — :has) */
+.contact-modal__option:has(input:checked) {
+  border-color: var(--color-black);
+  background-color: var(--color-gray-soft);
+}
+.contact-modal__option:has(input:checked) .contact-modal__option-label {
+  color: var(--color-black);
+  font-weight: var(--fw-medium);
+}
+
+/* Keyboard focus ring */
+.contact-modal__option:has(input:focus-visible) {
   outline: 2px solid var(--color-black);
   outline-offset: 2px;
 }
