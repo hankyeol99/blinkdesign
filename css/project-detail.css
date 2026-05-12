@@ -117,7 +117,7 @@
 .project-meta__label {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: 13px;
   font-weight: var(--fw-medium);
   letter-spacing: 0.04em;
   color: var(--color-gray-400);
