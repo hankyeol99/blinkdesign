@@ -224,8 +224,10 @@
   aspect-ratio: 4 / 3;
   border-radius: 8px;
   overflow: hidden;
+  /* outline sits just outside the rounded edge so it always reads against
+     the page background, regardless of the image's edge brightness. */
   outline: 1px solid #f2f2f2;
-  outline-offset: -1px;
+  outline-offset: 0;
 }
 
 .preview-card__image {
@@ -236,6 +238,13 @@
   object-position: center;
   transition: transform 0.5s var(--ease);
   pointer-events: none;    /* prevent native image drag from blocking the track drag */
+  /* Smooth high-quality downsampling on high-DPI displays to avoid the
+     jagged/aliased look that comes from large PNGs being shown small. */
+  image-rendering: auto;
+  image-rendering: -webkit-optimize-contrast; /* WebKit fallback */
+  image-rendering: high-quality;              /* Chrome 96+/Edge/Safari 15.4+ */
+  -ms-interpolation-mode: bicubic;
+  will-change: transform;                     /* hint GPU compositing */
 }
 
 .preview-card:hover .preview-card__image {
@@ -256,12 +265,16 @@
   .design-preview__title { font-size: 1.75rem; }
   .design-preview__nav { display: none; } /* native touch scroll on mobile */
 
-  .preview-card { flex: 0 0 55%; } /* 30% smaller than 78% */
+  /* Tablet: ~2.2 cards visible (was effectively 4 because the rule below
+     targeted the wrong element) */
+  .design-preview__track > li { flex: 0 0 44%; }
+  .preview-card__media { border-radius: 6px; }
 }
 
 @media (max-width: 479px) {
-  .preview-card { flex: 0 0 59%; } /* 30% smaller than 84% */
-  .preview-card__media { border-radius: 14px; }
+  /* Mobile: ~1.3 cards with a peek of the next card to invite scroll */
+  .design-preview__track > li { flex: 0 0 72%; }
+  .preview-card__media { border-radius: 5px; }
 }
 
 /* ==========================================================================
@@ -342,6 +355,12 @@
   font-weight: var(--fw-medium);
 }
 
+/* Variant: title sits above the gray card, aligned with its edge */
+.section-about__title--outside {
+  max-width: 105rem;
+  margin: 0 auto 1.5rem;
+}
+
 .about-list {
   display: flex;
   flex-direction: column;
@@ -393,7 +412,7 @@
 
 .simple-list__item {
   display: flex;
-  gap: 2.5rem;
+  gap: 1.25rem;
   padding: 1.75rem 0;
   border-bottom: 1px solid var(--color-gray-200);
 }
@@ -408,13 +427,14 @@
 }
 
 .simple-list__num {
-  flex: 0 0 4rem;
+  flex: 0 0 1.75rem;
   font-family: var(--font-sans);
   font-size: 1rem;
-  font-weight: var(--fw-medium);
+  font-weight: var(--fw-regular);
+  /* Match the title's first-line height so the cap-tops sit on the same line */
+  line-height: 1.875rem;
   letter-spacing: 0.04em;
   color: var(--color-gray-400);
-  padding-top: 0.25rem;
 }
 
 .simple-list__body {
@@ -428,6 +448,36 @@
   font-weight: var(--fw-semibold);
   color: var(--color-text-strong);
   font-family: var(--font-kr);
+}
+
+/* Inline supporting meta beside a simple-list title (page count · duration) */
+.simple-list__title-meta {
+  margin-left: 0.875rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-regular);
+  letter-spacing: 0.02em;
+  color: var(--color-gray-400);
+  vertical-align: middle;
+}
+
+/* Inline CTA at the bottom of a simple-list item (per-tier "이 구성으로 문의하기") */
+.simple-list__cta {
+  margin: 1.25rem 0 0;
+}
+
+.simple-list__cta .button-link {
+  font-size: var(--fs-medium);
+  color: var(--color-text-strong);
+}
+
+.simple-list__cta .button-link:hover {
+  color: var(--color-black);
+}
+
+/* Hero CTA paragraph (used on Service page Hero) */
+.hero__cta {
+  margin-top: 1.5rem;
 }
 
 .simple-list__desc {
@@ -510,6 +560,60 @@
   color: var(--color-text);
   line-height: var(--lh-relaxed);
   max-width: 45rem;
+}
+
+/* "전체 보기" link below a simple-list block on the home page previews */
+.section-cta-link {
+  margin-top: 2rem;
+}
+
+.section-cta-link .button-link {
+  font-size: var(--fs-medium);
+  color: var(--color-text-strong);
+}
+
+.section-cta-link .button-link:hover {
+  color: var(--color-black);
+}
+
+/* ==========================================================================
+   Tech Stack (home page preview)
+   ========================================================================== */
+
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem 3rem;
+}
+
+.stack-grid__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  min-width: 0;
+}
+
+.stack-grid__label {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-gray-400);
+}
+
+@media (max-width: 991px) {
+  .stack-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem 2rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .stack-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
 }
 
 /* Sub-content (chip lists) inside simple-list items */

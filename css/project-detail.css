@@ -35,6 +35,27 @@
 }
 
 /* --------------------------------------------------------------------------
+   Project cover (full-width hero image at the top of the detail page)
+   -------------------------------------------------------------------------- */
+
+.project-cover {
+  margin-top: 4rem;
+  padding-inline: var(--container-padding-x);
+}
+
+.project-cover__inner {
+  max-width: var(--max-width-page);
+  margin-inline: auto;
+}
+
+.project-cover__image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+/* --------------------------------------------------------------------------
    Project header
    -------------------------------------------------------------------------- */
 

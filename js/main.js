@@ -272,6 +272,33 @@
     }, 1400);
   });
 
+  /* ---------- Toast (minimal, single-instance) ---------- */
+  let toastEl = null;
+  let toastHideTimer = null;
+  const showToast = (message, variant = "info", duration = 2800) => {
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.className = "toast";
+      toastEl.setAttribute("role", "status");
+      toastEl.setAttribute("aria-live", "polite");
+      toastEl.innerHTML =
+        '<span class="toast__dot" aria-hidden="true"></span>' +
+        '<span class="toast__msg"></span>';
+      document.body.appendChild(toastEl);
+      // Force layout so the initial (hidden) state is committed before we
+      // toggle the visible class — otherwise the enter transition is skipped.
+      void toastEl.offsetWidth;
+    }
+    toastEl.querySelector(".toast__msg").textContent = message;
+    toastEl.dataset.variant = variant;
+    toastEl.classList.add("toast--show");
+    clearTimeout(toastHideTimer);
+    toastHideTimer = setTimeout(
+      () => toastEl.classList.remove("toast--show"),
+      duration
+    );
+  };
+
   /* ---------- Contact modal ---------- */
   const CONTACT_EMAIL = "sk41495133@gmail.com";
   const CONTACT_LINKEDIN = "https://www.linkedin.com/in/hankyeolkim";
@@ -280,39 +307,25 @@
   let lastFocusedTrigger = null;
 
   const FORM_GROUPS = [
-    { name: "project-type", label: "어떤 작업이 필요하신가요?", required: true, type: "radio",
+    { name: "project-type", label: "어떤 작업이 필요하신가요?", required: true,
       options: ["랜딩페이지", "회사 홈페이지", "브랜드 사이트", "기존 사이트 리디자인", "기타"] },
-    { name: "purpose", label: "웹사이트의 주된 목적은 무엇인가요?", required: true, type: "radio",
+    { name: "purpose", label: "웹사이트의 주된 목적은 무엇인가요?", required: true, multi: true,
+      hint: "복수 선택 가능",
       options: ["문의 증가", "서비스 소개", "브랜드 신뢰도 강화", "제품 판매", "광고 전환", "기타"] },
-    { name: "scope", label: "필요한 작업 범위", required: true, type: "radio",
+    { name: "scope", label: "필요한 작업 범위", required: true,
       options: ["디자인만", "디자인+개발", "기존 사이트 수정", "배포까지", "아직 모르겠음"] },
-    { name: "budget", label: "예상 예산 범위", required: true, type: "radio",
-      options: ["50만 원 이하", "50~100만 원", "100~200만 원", "200~300만 원", "300만 원 이상", "미정"] },
-    { name: "timeline", label: "희망 오픈 일정", required: true, type: "radio",
+    { name: "budget", label: "예상 예산 범위", required: true,
+      options: ["30만 원 이하", "30~50만 원", "50~100만 원", "100~200만 원", "200만 원 이상", "미정"] },
+    { name: "timeline", label: "희망 오픈 일정", required: true,
       options: ["1주 이내", "2주 이내", "1개월 이내", "협의 가능"] },
   ];
 
-  const pad2 = (n) => String(n).padStart(2, "0");
-
-  const fieldHead = (num, label, required) => `
-    <legend class="contact-modal__field-head">
-      <span class="contact-modal__field-num">${pad2(num)}</span>
-      <span class="contact-modal__field-q">${label}${required ? ' <span class="contact-modal__req" aria-hidden="true">*</span>' : ""}</span>
-    </legend>`;
-
-  const labelHead = (num, label, htmlFor, required) => `
-    <label class="contact-modal__field-head" for="${htmlFor}">
-      <span class="contact-modal__field-num">${pad2(num)}</span>
-      <span class="contact-modal__field-q">${label}${required ? ' <span class="contact-modal__req" aria-hidden="true">*</span>' : ""}</span>
-    </label>`;
-
-  const renderOptionList = (g) =>
-    `<div class="contact-modal__options" role="${g.type === "radio" ? "radiogroup" : "group"}">
+  const renderChipGroup = (g, type) =>
+    `<div class="contact-modal__chip-group" role="${type === "radio" ? "radiogroup" : "group"}">
       ${g.options.map((opt) => `
-        <label class="contact-modal__option">
-          <input type="${g.type}" name="${g.name}" value="${opt}"${g.required && g.type === "radio" ? " required" : ""}>
-          <span class="contact-modal__option-indicator" aria-hidden="true"></span>
-          <span class="contact-modal__option-label">${opt}</span>
+        <label class="contact-modal__chip">
+          <input type="${type}" name="${g.name}" value="${opt}"${g.required && type === "radio" ? " required" : ""}>
+          <span>${opt}</span>
         </label>
       `).join("")}
     </div>`;
@@ -325,14 +338,14 @@
     root.setAttribute("aria-labelledby", "contact-modal-title");
     root.setAttribute("aria-hidden", "true");
 
-    const radioFields = FORM_GROUPS.map((g, i) => `
+    const radioFields = FORM_GROUPS.map((g) => `
       <fieldset class="contact-modal__field">
-        ${fieldHead(i + 1, g.label, g.required)}
-        ${renderOptionList(g)}
+        <legend class="contact-modal__label">${g.label}${g.required ? ' <span class="contact-modal__req" aria-hidden="true">*</span>' : ""}${g.hint ? ` <span class="contact-modal__hint">${g.hint}</span>` : ""}</legend>
+        ${renderChipGroup(g, g.multi ? "checkbox" : "radio")}
       </fieldset>
     `).join("");
 
-    const materials = { name: "materials", required: false, type: "checkbox",
+    const materials = { name: "materials", required: false,
       options: ["로고", "브랜드 가이드", "텍스트", "이미지", "기존 사이트", "없음"] };
 
     root.innerHTML = `
@@ -350,17 +363,17 @@
           ${radioFields}
 
           <div class="contact-modal__field">
-            ${labelHead(6, "참고하고 싶은 사이트가 있다면 알려주세요", "cm-reference", false)}
-            <input id="cm-reference" name="reference" class="contact-modal__input" type="text" placeholder="URL 또는 간단한 설명" autocomplete="off">
+            <label class="contact-modal__label" for="cm-reference">참고할 사이트 혹은 레퍼런스가 있다면 알려주세요</label>
+            <textarea id="cm-reference" name="reference" class="contact-modal__input contact-modal__input--autosize" rows="1" placeholder="URL 또는 간단한 설명" data-autosize></textarea>
           </div>
 
           <fieldset class="contact-modal__field">
-            ${fieldHead(7, "현재 준비된 자료가 있나요?", false)}
-            ${renderOptionList(materials)}
+            <legend class="contact-modal__label">현재 준비된 자료가 있나요?</legend>
+            ${renderChipGroup(materials, "checkbox")}
           </fieldset>
 
           <div class="contact-modal__field">
-            ${labelHead(8, "프로젝트에 대해 간단히 설명해주세요", "cm-description", false)}
+            <label class="contact-modal__label" for="cm-description">프로젝트에 대해 간단히 설명해주세요</label>
             <textarea id="cm-description" name="description" class="contact-modal__textarea" rows="5" placeholder="현재 상황, 필요한 페이지, 원하는 분위기, 고민 중인 부분 등을 자유롭게 적어주세요."></textarea>
           </div>
 
@@ -376,17 +389,43 @@
     });
 
     const form = root.querySelector("[data-contact-form]");
+
+    // Auto-grow any textarea with data-autosize as the user types
+    const autosizeFields = form.querySelectorAll("[data-autosize]");
+    const autosize = (el) => {
+      el.style.height = "auto";
+      el.style.height = el.scrollHeight + "px";
+    };
+    autosizeFields.forEach((el) => {
+      el.addEventListener("input", () => autosize(el));
+    });
+
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      if (!form.reportValidity()) return;
 
       const data = new FormData(form);
+
+      // Custom validation for every required group (toast UI, no native popup).
+      // We don't call form.reportValidity() because that forces Chrome's
+      // built-in validation tooltip even when the form has `novalidate`.
+      for (const g of FORM_GROUPS) {
+        if (!g.required) continue;
+        const count = data.getAll(g.name).length;
+        if (count === 0) {
+          const verb = g.multi ? "하나 이상 선택해 주세요" : "선택해 주세요";
+          showToast(`${g.label.replace(/\?$/, "")} — ${verb}.`, "error");
+          const first = form.querySelector(`input[name="${g.name}"]`);
+          if (first) first.focus();
+          return;
+        }
+      }
+
       const get = (k) => (data.get(k) || "").trim() || "-";
       const getAll = (k) => data.getAll(k).join(", ") || "-";
 
       const lines = [
         `[작업 종류] ${get("project-type")}`,
-        `[웹사이트 목적] ${get("purpose")}`,
+        `[웹사이트 목적] ${getAll("purpose")}`,
         `[작업 범위] ${get("scope")}`,
         `[예상 예산] ${get("budget")}`,
         `[희망 오픈 일정] ${get("timeline")}`,
