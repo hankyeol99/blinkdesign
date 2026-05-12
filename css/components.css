@@ -1041,6 +1041,13 @@
   margin-inline: auto;
 }
 
+/* Align the page hero title with the legal-doc body column.
+   Combined with .hero--page to outrank .hero--page .hero__inner in home.css. */
+.hero--page.hero--legal .hero__inner {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
 .legal-doc__effective {
   margin: 0.75rem 0 0;
   font-size: var(--fs-small);
