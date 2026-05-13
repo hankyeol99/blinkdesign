@@ -6,6 +6,26 @@
   <meta name="description" content="브랜드와 비즈니스에 꼭 맞는 웹사이트를 설계합니다. 랜딩 페이지, 브랜드 사이트, 서비스 웹까지 기획부터 디자인까지 한 호흡으로 진행하는 웹디자인 스튜디오 BlinkDesign.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Search & indexing -->
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow">
+  <link rel="canonical" href="https://blinkdesign.kr/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BlinkDesign">
+  <meta property="og:title" content="BlinkDesign — 스타트업·소상공인 웹디자인 스튜디오">
+  <meta property="og:description" content="스타트업·소상공인을 위한 웹디자인 스튜디오. 기획·디자인·개발·배포까지 한 호흡으로 진행합니다.">
+  <meta property="og:url" content="https://blinkdesign.kr/">
+  <meta property="og:image" content="https://blinkdesign.kr/og-image.png">
+  <meta property="og:locale" content="ko_KR">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BlinkDesign — 스타트업·소상공인 웹디자인 스튜디오">
+  <meta name="twitter:description" content="스타트업·소상공인을 위한 웹디자인 스튜디오. 기획·디자인·개발·배포까지 한 호흡으로 진행합니다.">
+  <meta name="twitter:image" content="https://blinkdesign.kr/og-image.png">
+
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="apple-touch-icon" href="images/webclip.png">
 
@@ -19,6 +39,79 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/home.css">
+
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://blinkdesign.kr/#organization",
+        "name": "BlinkDesign",
+        "alternateName": "블링크디자인",
+        "url": "https://blinkdesign.kr",
+        "logo": "https://blinkdesign.kr/favicon.svg",
+        "description": "스타트업·소상공인을 위한 웹디자인 스튜디오. 기획·디자인·개발·배포까지 한 호흡으로 진행합니다.",
+        "founder": {
+          "@type": "Person",
+          "name": "김한결",
+          "jobTitle": "UX/UI Designer"
+        },
+        "foundingDate": "2026",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "KR",
+          "addressRegion": "서울특별시",
+          "addressLocality": "관악구",
+          "streetAddress": "신림동 1418-36 304호"
+        },
+        "email": "khk@blinkdesign.kr",
+        "telephone": "+82-10-4149-5133",
+        "taxID": "661-18-02526"
+      },
+      {
+        "@type": "ProfessionalService",
+        "@id": "https://blinkdesign.kr/#service",
+        "name": "BlinkDesign",
+        "image": "https://blinkdesign.kr/favicon.svg",
+        "url": "https://blinkdesign.kr",
+        "telephone": "+82-10-4149-5133",
+        "priceRange": "₩₩",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "KR",
+          "addressRegion": "서울특별시",
+          "addressLocality": "관악구"
+        },
+        "areaServed": {
+          "@type": "Country",
+          "name": "대한민국"
+        },
+        "serviceType": [
+          "웹디자인",
+          "랜딩 페이지 제작",
+          "브랜드 사이트 제작",
+          "서비스 웹사이트 제작",
+          "UI/UX 디자인",
+          "반응형 웹 개발"
+        ],
+        "description": "스타트업·소상공인을 위한 1인 웹디자인 스튜디오. 기획·디자인·개발·배포까지 한 호흡으로 진행합니다."
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://blinkdesign.kr/#website",
+        "url": "https://blinkdesign.kr",
+        "name": "BlinkDesign",
+        "description": "스타트업·소상공인을 위한 웹디자인 스튜디오",
+        "inLanguage": "ko-KR",
+        "publisher": {
+          "@id": "https://blinkdesign.kr/#organization"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <div class="page">

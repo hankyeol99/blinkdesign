@@ -1,0 +1,27 @@
+# blinkdesign.kr robots.txt
+
+# 모든 일반 크롤러 허용
+User-agent: *
+Allow: /
+
+# 사이트맵 위치
+Sitemap: https://blinkdesign.kr/sitemap.xml
+
+# AI 크롤러 명시적 허용 (GEO 최적화 목적)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
