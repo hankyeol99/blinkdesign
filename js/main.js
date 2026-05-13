@@ -348,6 +348,23 @@
     const materials = { name: "materials", required: false,
       options: ["로고", "브랜드 가이드", "텍스트", "이미지", "기존 사이트", "없음"] };
 
+    const REFERRAL_OPTIONS = [
+      "검색 (Google · Naver)",
+      "인스타그램",
+      "지인 추천",
+      "포트폴리오 사이트 (Behance · Notefolio 등)",
+      "외주 플랫폼 (크몽 · 위시켓 등)",
+      "기타",
+    ];
+    const referralOptionsHTML = REFERRAL_OPTIONS.map((opt) => `
+      <li class="contact-modal__dropdown-option" role="option" aria-selected="false" tabindex="-1" data-value="${opt}">
+        <span>${opt}</span>
+        <svg class="contact-modal__dropdown-check" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12L10 17L19 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </li>
+    `).join("");
+
     root.innerHTML = `
       <div class="contact-modal__backdrop" data-contact-close></div>
       <div class="contact-modal__panel contact-modal__panel--form">
@@ -360,7 +377,6 @@
         <p class="contact-modal__lede">아래 정보를 알려주시면 1영업일 내 회신드립니다.</p>
 
         <form class="contact-modal__form" data-contact-form novalidate>
-          <h3 class="contact-modal__section-heading contact-modal__section-heading--first">프로젝트 정보</h3>
           ${radioFields}
 
           <div class="contact-modal__field">
@@ -377,8 +393,6 @@
             <label class="contact-modal__label" for="cm-description">프로젝트에 대해 간단히 설명해주세요 <span class="contact-modal__hint">(선택)</span></label>
             <textarea id="cm-description" name="description" class="contact-modal__textarea" rows="5" placeholder="현재 상황, 필요한 페이지, 원하는 분위기, 고민 중인 부분 등을 자유롭게 적어주세요."></textarea>
           </div>
-
-          <h3 class="contact-modal__section-heading">연락처 정보</h3>
 
           <div class="contact-modal__field">
             <label class="contact-modal__label" for="cm-name">이름</label>
@@ -410,16 +424,25 @@
           </div>
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-referral">유입 경로 <span class="contact-modal__hint">(선택)</span></label>
-            <select id="cm-referral" name="referral" class="contact-modal__select">
-              <option value="">선택해 주세요</option>
-              <option>검색 (Google · Naver)</option>
-              <option>인스타그램</option>
-              <option>지인 추천</option>
-              <option>포트폴리오 사이트 (Behance · Notefolio 등)</option>
-              <option>이전 작업물</option>
-              <option>기타</option>
-            </select>
+            <label class="contact-modal__label" id="cm-referral-label">유입 경로 <span class="contact-modal__hint">(선택)</span></label>
+            <div class="contact-modal__dropdown" data-dropdown>
+              <button type="button" class="contact-modal__dropdown-trigger" data-dropdown-trigger
+                      aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cm-referral-label">
+                <span class="contact-modal__dropdown-value contact-modal__dropdown-value--placeholder" data-dropdown-value>선택해 주세요</span>
+                <span class="contact-modal__dropdown-chevron" aria-hidden="true">
+                  <svg class="contact-modal__dropdown-chevron-down" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <svg class="contact-modal__dropdown-chevron-up" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 15L12 9L18 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </button>
+              <ul class="contact-modal__dropdown-menu" role="listbox" tabindex="-1" data-dropdown-menu aria-labelledby="cm-referral-label">
+                ${referralOptionsHTML}
+              </ul>
+              <input type="hidden" name="referral" data-dropdown-input>
+            </div>
           </div>
 
           <label class="contact-modal__consent">
@@ -478,6 +501,95 @@
     };
     channelInputs.forEach((el) => el.addEventListener("change", syncContactDetail));
     syncContactDetail();
+
+    // Custom dropdowns ([data-dropdown]) — accessible button + listbox pattern.
+    // Each dropdown owns a hidden <input> so its value flows into FormData as
+    // if it were a native <select>.
+    form.querySelectorAll("[data-dropdown]").forEach((dd) => {
+      const trigger = dd.querySelector("[data-dropdown-trigger]");
+      const menu = dd.querySelector("[data-dropdown-menu]");
+      const valueEl = dd.querySelector("[data-dropdown-value]");
+      const hidden = dd.querySelector("[data-dropdown-input]");
+      const options = [...dd.querySelectorAll('[role="option"]')];
+      const placeholderText = valueEl.textContent;
+
+      const open = () => {
+        dd.classList.add("is-open");
+        trigger.setAttribute("aria-expanded", "true");
+        // Focus the selected option if any, else the first one.
+        const target = options.find((o) => o.getAttribute("aria-selected") === "true") || options[0];
+        // Defer focus until after the transition starts so screen readers
+        // pick up the listbox.
+        requestAnimationFrame(() => target?.focus());
+      };
+      const close = ({ refocus = false } = {}) => {
+        dd.classList.remove("is-open");
+        trigger.setAttribute("aria-expanded", "false");
+        if (refocus) trigger.focus();
+      };
+      const select = (opt) => {
+        options.forEach((o) => o.setAttribute("aria-selected", o === opt ? "true" : "false"));
+        const value = opt.dataset.value || opt.textContent.trim();
+        valueEl.textContent = value;
+        valueEl.classList.remove("contact-modal__dropdown-value--placeholder");
+        hidden.value = value;
+        close({ refocus: true });
+      };
+
+      trigger.addEventListener("click", () => {
+        if (dd.classList.contains("is-open")) close();
+        else open();
+      });
+
+      trigger.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          open();
+        }
+      });
+
+      options.forEach((opt, i) => {
+        opt.addEventListener("click", () => select(opt));
+        opt.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            options[(i + 1) % options.length].focus();
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            options[(i - 1 + options.length) % options.length].focus();
+          } else if (e.key === "Home") {
+            e.preventDefault();
+            options[0].focus();
+          } else if (e.key === "End") {
+            e.preventDefault();
+            options[options.length - 1].focus();
+          } else if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            select(opt);
+          } else if (e.key === "Escape") {
+            e.preventDefault();
+            close({ refocus: true });
+          } else if (e.key === "Tab") {
+            close();
+          }
+        });
+      });
+
+      // Outside-click closes the menu. Scope to the modal root so it stays
+      // independent of any document-level click handler.
+      root.addEventListener("click", (e) => {
+        if (!dd.contains(e.target) && dd.classList.contains("is-open")) close();
+      });
+
+      // Allow callers to reset the dropdown (used when "선호 연락 수단" flips
+      // hidden state — irrelevant for referral, but cheap to support).
+      dd._reset = () => {
+        options.forEach((o) => o.setAttribute("aria-selected", "false"));
+        valueEl.textContent = placeholderText;
+        valueEl.classList.add("contact-modal__dropdown-value--placeholder");
+        hidden.value = "";
+      };
+    });
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();

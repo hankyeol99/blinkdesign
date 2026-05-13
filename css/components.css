@@ -1026,50 +1026,172 @@
   text-underline-offset: 2px;
 }
 
-/* Section heading inside the form (프로젝트 정보 / 연락처 정보) */
-.contact-modal__section-heading {
-  margin: 14px 0 -4px;
-  padding-top: 22px;
-  border-top: 1px solid var(--color-gray-200);
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: var(--fw-medium);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-gray-400);
+/* Custom dropdown (button + listbox).
+   Replaces native <select> so the menu fully matches the site tone. */
+.contact-modal__dropdown {
+  position: relative;
 }
 
-.contact-modal__section-heading--first {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
-}
-
-/* Native <select> styled to match .contact-modal__input */
-.contact-modal__select {
+.contact-modal__dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
-  padding: 11px 40px 11px 14px;
+  padding: 11px 14px;
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-input);
-  font-family: var(--font-kr);
-  font-size: var(--fs-medium);
-  color: var(--color-black);
   background-color: var(--color-white);
-  /* Custom chevron icon (right-aligned) */
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3e%3cpath d='M6 9L12 15L18 9' stroke='%239a9aa3' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 16px 16px;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  text-align: left;
   cursor: pointer;
   transition: border-color var(--duration-fast) var(--ease);
 }
 
-.contact-modal__select:focus {
+.contact-modal__dropdown-trigger:hover {
+  border-color: var(--color-gray-400);
+}
+
+.contact-modal__dropdown-trigger:focus-visible,
+.contact-modal__dropdown.is-open .contact-modal__dropdown-trigger {
   outline: none;
   border-color: var(--color-black);
+}
+
+.contact-modal__dropdown-value {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-kr);
+  font-size: var(--fs-medium);
+  line-height: 1.4;
+  color: var(--color-black);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contact-modal__dropdown-value--placeholder {
+  color: var(--color-gray-400);
+}
+
+.contact-modal__dropdown-chevron {
+  flex-shrink: 0;
+  position: relative;
+  width: 16px;
+  height: 16px;
+  color: var(--color-gray-400);
+  transition: color var(--duration-base) var(--ease);
+}
+
+/* Swap the two glyphs by toggling display rather than rotating — some
+   browsers silently drop CSS transforms inside this flex layout. */
+.contact-modal__dropdown-chevron-down,
+.contact-modal__dropdown-chevron-up {
+  width: 100%;
+  height: 100%;
+}
+
+.contact-modal__dropdown-chevron-up {
+  display: none;
+}
+
+.contact-modal__dropdown.is-open .contact-modal__dropdown-chevron {
+  color: var(--color-black);
+}
+
+.contact-modal__dropdown.is-open .contact-modal__dropdown-chevron-down {
+  display: none;
+}
+
+.contact-modal__dropdown.is-open .contact-modal__dropdown-chevron-up {
+  display: block;
+}
+
+.contact-modal__dropdown-menu {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-input);
+  box-shadow: 0 8px 24px rgba(15, 15, 20, 0.08),
+              0 2px 6px rgba(15, 15, 20, 0.06);
+  max-height: 280px;
+  overflow-y: auto;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease),
+              transform var(--duration-fast) var(--ease),
+              visibility 0s linear var(--duration-fast);
+}
+
+.contact-modal__dropdown.is-open .contact-modal__dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  transition: opacity var(--duration-fast) var(--ease),
+              transform var(--duration-fast) var(--ease),
+              visibility 0s linear 0s;
+}
+
+/* Match the panel scrollbar look (thin, neutral) */
+.contact-modal__dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+.contact-modal__dropdown-menu::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-300);
+  border-radius: 999px;
+}
+.contact-modal__dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-gray-400);
+}
+
+.contact-modal__dropdown-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-family: var(--font-kr);
+  font-size: var(--fs-medium);
+  line-height: 1.4;
+  color: var(--color-text);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color var(--duration-fast) var(--ease),
+              color var(--duration-fast) var(--ease);
+}
+
+.contact-modal__dropdown-option:hover,
+.contact-modal__dropdown-option:focus-visible {
+  background-color: var(--color-gray-soft);
+  color: var(--color-black);
+}
+
+.contact-modal__dropdown-option[aria-selected="true"] {
+  color: var(--color-black);
+  font-weight: var(--fw-medium);
+}
+
+.contact-modal__dropdown-check {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--color-black);
+  display: none;
+}
+
+.contact-modal__dropdown-option[aria-selected="true"] .contact-modal__dropdown-check {
+  display: block;
 }
 
 /* Privacy consent checkbox row above the submit button */
