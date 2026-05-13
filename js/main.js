@@ -360,6 +360,7 @@
         <p class="contact-modal__lede">아래 정보를 알려주시면 1영업일 내 회신드립니다.</p>
 
         <form class="contact-modal__form" data-contact-form novalidate>
+          <h3 class="contact-modal__section-heading contact-modal__section-heading--first">프로젝트 정보</h3>
           ${radioFields}
 
           <div class="contact-modal__field">
@@ -376,6 +377,57 @@
             <label class="contact-modal__label" for="cm-description">프로젝트에 대해 간단히 설명해주세요</label>
             <textarea id="cm-description" name="description" class="contact-modal__textarea" rows="5" placeholder="현재 상황, 필요한 페이지, 원하는 분위기, 고민 중인 부분 등을 자유롭게 적어주세요."></textarea>
           </div>
+
+          <h3 class="contact-modal__section-heading">연락처 정보</h3>
+
+          <div class="contact-modal__field">
+            <label class="contact-modal__label" for="cm-name">이름 <span class="contact-modal__req" aria-hidden="true">*</span></label>
+            <input id="cm-name" name="name" type="text" class="contact-modal__input" placeholder="홍길동" autocomplete="name" required>
+          </div>
+
+          <div class="contact-modal__field">
+            <label class="contact-modal__label" for="cm-email">이메일 <span class="contact-modal__req" aria-hidden="true">*</span></label>
+            <input id="cm-email" name="email" type="email" class="contact-modal__input" placeholder="name@example.com" autocomplete="email" inputmode="email" required>
+          </div>
+
+          <div class="contact-modal__field">
+            <label class="contact-modal__label" for="cm-company">회사 / 소속 <span class="contact-modal__req" aria-hidden="true">*</span></label>
+            <input id="cm-company" name="company" type="text" class="contact-modal__input" placeholder="개인은 ‘개인’으로 적어주세요" autocomplete="organization" required>
+          </div>
+
+          <fieldset class="contact-modal__field">
+            <legend class="contact-modal__label">선호 연락 수단 <span class="contact-modal__req" aria-hidden="true">*</span></legend>
+            <div class="contact-modal__chip-group" role="radiogroup" data-channel-group>
+              <label class="contact-modal__chip"><input type="radio" name="preferred-channel" value="이메일" checked><span>이메일</span></label>
+              <label class="contact-modal__chip"><input type="radio" name="preferred-channel" value="전화"><span>전화</span></label>
+              <label class="contact-modal__chip"><input type="radio" name="preferred-channel" value="카톡"><span>카톡</span></label>
+            </div>
+          </fieldset>
+
+          <div class="contact-modal__field" data-contact-detail-wrap hidden>
+            <label class="contact-modal__label" for="cm-contact-detail" data-contact-detail-label>전화번호</label>
+            <input id="cm-contact-detail" name="contact-detail" type="text" class="contact-modal__input" data-contact-detail-input placeholder="010-1234-5678" autocomplete="tel">
+          </div>
+
+          <div class="contact-modal__field">
+            <label class="contact-modal__label" for="cm-referral">유입 경로 <span class="contact-modal__hint">선택 사항</span></label>
+            <select id="cm-referral" name="referral" class="contact-modal__select">
+              <option value="">선택해 주세요</option>
+              <option>검색 (Google · Naver)</option>
+              <option>인스타그램</option>
+              <option>지인 추천</option>
+              <option>포트폴리오 사이트 (Behance · Notefolio 등)</option>
+              <option>이전 작업물</option>
+              <option>기타</option>
+            </select>
+          </div>
+
+          <label class="contact-modal__consent">
+            <input type="checkbox" name="consent" data-consent required>
+            <span>
+              <a href="privacy-policy.html" target="_blank" rel="noopener">개인정보처리방침</a>에 따른 개인정보 수집·이용에 동의합니다. <span class="contact-modal__req" aria-hidden="true">*</span>
+            </span>
+          </label>
 
           <button type="submit" class="contact-modal__submit">문의 보내기</button>
           <p class="contact-modal__fineprint">또는 <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a> 으로 직접 연락 주세요.</p>
@@ -400,6 +452,33 @@
       el.addEventListener("input", () => autosize(el));
     });
 
+    // Conditional contact-detail field: visible only when channel is 전화/카톡
+    const channelInputs = form.querySelectorAll('input[name="preferred-channel"]');
+    const contactDetailWrap = form.querySelector("[data-contact-detail-wrap]");
+    const contactDetailLabel = form.querySelector("[data-contact-detail-label]");
+    const contactDetailInput = form.querySelector("[data-contact-detail-input]");
+    const syncContactDetail = () => {
+      const channel = form.querySelector('input[name="preferred-channel"]:checked')?.value;
+      if (channel === "전화") {
+        contactDetailWrap.hidden = false;
+        contactDetailLabel.textContent = "전화번호";
+        contactDetailInput.placeholder = "010-1234-5678";
+        contactDetailInput.setAttribute("autocomplete", "tel");
+        contactDetailInput.setAttribute("inputmode", "tel");
+      } else if (channel === "카톡") {
+        contactDetailWrap.hidden = false;
+        contactDetailLabel.textContent = "카톡 ID";
+        contactDetailInput.placeholder = "blinkdesign";
+        contactDetailInput.setAttribute("autocomplete", "username");
+        contactDetailInput.removeAttribute("inputmode");
+      } else {
+        contactDetailWrap.hidden = true;
+        contactDetailInput.value = "";
+      }
+    };
+    channelInputs.forEach((el) => el.addEventListener("change", syncContactDetail));
+    syncContactDetail();
+
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
@@ -420,10 +499,66 @@
         }
       }
 
+      // Contact info validation
+      const name = (data.get("name") || "").trim();
+      const email = (data.get("email") || "").trim();
+      const company = (data.get("company") || "").trim();
+      const channel = data.get("preferred-channel") || "";
+      const contactDetail = (data.get("contact-detail") || "").trim();
+      const consent = form.querySelector("[data-consent]")?.checked;
+
+      const focusField = (selector) => {
+        const el = form.querySelector(selector);
+        if (el && typeof el.focus === "function") el.focus();
+      };
+
+      if (!name) { showToast("이름을 입력해 주세요.", "error"); focusField("#cm-name"); return; }
+      if (!email) { showToast("이메일을 입력해 주세요.", "error"); focusField("#cm-email"); return; }
+      // RFC-pragmatic check: non-empty local@domain.tld
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast("이메일 형식이 올바르지 않습니다.", "error");
+        focusField("#cm-email");
+        return;
+      }
+      if (!company) { showToast("회사 / 소속을 입력해 주세요.", "error"); focusField("#cm-company"); return; }
+      if (!channel) {
+        showToast("선호 연락 수단을 선택해 주세요.", "error");
+        focusField('input[name="preferred-channel"]');
+        return;
+      }
+      if ((channel === "전화" || channel === "카톡") && !contactDetail) {
+        const label = channel === "전화" ? "전화번호" : "카톡 ID";
+        showToast(`${label}를 입력해 주세요.`, "error");
+        focusField("#cm-contact-detail");
+        return;
+      }
+      if (!consent) {
+        showToast("개인정보 수집·이용에 동의해 주세요.", "error");
+        focusField("[data-consent]");
+        return;
+      }
+
       const get = (k) => (data.get(k) || "").trim() || "-";
       const getAll = (k) => data.getAll(k).join(", ") || "-";
+      const referral = (data.get("referral") || "").trim();
+
+      const contactLines = [
+        `[이름] ${name}`,
+        `[이메일] ${email}`,
+        `[회사/소속] ${company}`,
+        `[선호 연락 수단] ${channel}`,
+      ];
+      if (contactDetail) {
+        const detailLabel = channel === "전화" ? "전화번호" : channel === "카톡" ? "카톡 ID" : "추가 연락처";
+        contactLines.push(`[${detailLabel}] ${contactDetail}`);
+      }
+      if (referral) contactLines.push(`[유입 경로] ${referral}`);
 
       const lines = [
+        ...contactLines,
+        "",
+        "──────────",
+        "",
         `[작업 종류] ${get("project-type")}`,
         `[웹사이트 목적] ${getAll("purpose")}`,
         `[작업 범위] ${get("scope")}`,
@@ -437,7 +572,7 @@
         get("description"),
       ];
 
-      const subject = `[BlinkDesign 문의] ${data.get("project-type") || ""}`.trim();
+      const subject = `[BlinkDesign 문의] ${name} · ${data.get("project-type") || ""}`.trim();
       const body = lines.join("\n");
       window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     });

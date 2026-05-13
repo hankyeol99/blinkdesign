@@ -1023,6 +1023,87 @@
   text-underline-offset: 2px;
 }
 
+/* Section heading inside the form (프로젝트 정보 / 연락처 정보) */
+.contact-modal__section-heading {
+  margin: 14px 0 -4px;
+  padding-top: 22px;
+  border-top: 1px solid var(--color-gray-200);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gray-400);
+}
+
+.contact-modal__section-heading--first {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Native <select> styled to match .contact-modal__input */
+.contact-modal__select {
+  width: 100%;
+  padding: 11px 40px 11px 14px;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-input);
+  font-family: var(--font-kr);
+  font-size: var(--fs-medium);
+  color: var(--color-black);
+  background-color: var(--color-white);
+  /* Custom chevron icon (right-aligned) */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3e%3cpath d='M6 9L12 15L18 9' stroke='%239a9aa3' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 16px;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease);
+}
+
+.contact-modal__select:focus {
+  outline: none;
+  border-color: var(--color-black);
+}
+
+/* Privacy consent checkbox row above the submit button */
+.contact-modal__consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-input);
+  font-size: var(--fs-small);
+  line-height: var(--lh-relaxed);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease),
+              background-color var(--duration-fast) var(--ease);
+}
+
+.contact-modal__consent:hover {
+  border-color: var(--color-gray-400);
+}
+
+.contact-modal__consent input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: var(--color-black);
+  cursor: pointer;
+}
+
+.contact-modal__consent a {
+  color: var(--color-black);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 @media (max-width: 480px) {
   .contact-modal__panel--form { padding: 28px 20px 24px; }
 }
