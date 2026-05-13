@@ -340,13 +340,30 @@
 
     const radioFields = FORM_GROUPS.map((g) => `
       <fieldset class="contact-modal__field">
-        <legend class="contact-modal__label">${g.label}${g.required ? ' <span class="contact-modal__req" aria-hidden="true">*</span>' : ""}${g.hint ? ` <span class="contact-modal__hint">${g.hint}</span>` : ""}</legend>
+        <legend class="contact-modal__label">${g.label}${g.required ? "" : ' <span class="contact-modal__hint">(선택)</span>'}${g.hint ? ` <span class="contact-modal__hint">${g.hint}</span>` : ""}</legend>
         ${renderChipGroup(g, g.multi ? "checkbox" : "radio")}
       </fieldset>
     `).join("");
 
     const materials = { name: "materials", required: false,
       options: ["로고", "브랜드 가이드", "텍스트", "이미지", "기존 사이트", "없음"] };
+
+    const REFERRAL_OPTIONS = [
+      "검색 (Google · Naver)",
+      "인스타그램",
+      "지인 추천",
+      "포트폴리오 사이트 (Behance · Notefolio 등)",
+      "외주 플랫폼 (크몽 · 위시켓 등)",
+      "기타",
+    ];
+    const referralOptionsHTML = REFERRAL_OPTIONS.map((opt) => `
+      <li class="contact-modal__dropdown-option" role="option" aria-selected="false" tabindex="-1" data-value="${opt}">
+        <span>${opt}</span>
+        <svg class="contact-modal__dropdown-check" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12L10 17L19 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </li>
+    `).join("");
 
     root.innerHTML = `
       <div class="contact-modal__backdrop" data-contact-close></div>
@@ -360,22 +377,83 @@
         <p class="contact-modal__lede">아래 정보를 알려주시면 1영업일 내 회신드립니다.</p>
 
         <form class="contact-modal__form" data-contact-form novalidate>
+          <hr class="contact-modal__divider">
           ${radioFields}
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-reference">참고할 사이트 혹은 레퍼런스가 있다면 알려주세요</label>
+            <label class="contact-modal__label" for="cm-reference">참고할 사이트 혹은 레퍼런스 <span class="contact-modal__hint">(선택)</span></label>
             <textarea id="cm-reference" name="reference" class="contact-modal__input contact-modal__input--autosize" rows="1" placeholder="URL 또는 간단한 설명" data-autosize></textarea>
           </div>
 
           <fieldset class="contact-modal__field">
-            <legend class="contact-modal__label">현재 준비된 자료가 있나요?</legend>
+            <legend class="contact-modal__label">현재 준비된 자료 <span class="contact-modal__hint">(선택)</span></legend>
             ${renderChipGroup(materials, "checkbox")}
           </fieldset>
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-description">프로젝트에 대해 간단히 설명해주세요</label>
+            <label class="contact-modal__label" for="cm-description">프로젝트에 대해 간단히 설명해주세요 <span class="contact-modal__hint">(선택)</span></label>
             <textarea id="cm-description" name="description" class="contact-modal__textarea" rows="5" placeholder="현재 상황, 필요한 페이지, 원하는 분위기, 고민 중인 부분 등을 자유롭게 적어주세요."></textarea>
           </div>
+
+          <hr class="contact-modal__divider">
+
+          <div class="contact-modal__field">
+            <label class="contact-modal__label" for="cm-name">이름</label>
+            <input id="cm-name" name="name" type="text" class="contact-modal__input" placeholder="홍길동" autocomplete="name" required>
+          </div>
+
+          <div class="contact-modal__field">
+            <label class="contact-modal__label" for="cm-email">이메일</label>
+            <input id="cm-email" name="email" type="email" class="contact-modal__input" placeholder="name@example.com" autocomplete="email" inputmode="email" required>
+          </div>
+
+          <div class="contact-modal__field">
+            <label class="contact-modal__label" for="cm-company">회사 / 소속</label>
+            <input id="cm-company" name="company" type="text" class="contact-modal__input" placeholder="개인은 ‘개인’으로 적어주세요" autocomplete="organization" required>
+          </div>
+
+          <fieldset class="contact-modal__field">
+            <legend class="contact-modal__label">선호 연락 수단</legend>
+            <div class="contact-modal__chip-group" role="radiogroup" data-channel-group>
+              <label class="contact-modal__chip"><input type="radio" name="preferred-channel" value="이메일" checked><span>이메일</span></label>
+              <label class="contact-modal__chip"><input type="radio" name="preferred-channel" value="전화"><span>전화</span></label>
+              <label class="contact-modal__chip"><input type="radio" name="preferred-channel" value="카톡"><span>카톡</span></label>
+            </div>
+          </fieldset>
+
+          <div class="contact-modal__field" data-contact-detail-wrap hidden>
+            <label class="contact-modal__label" for="cm-contact-detail" data-contact-detail-label>전화번호</label>
+            <input id="cm-contact-detail" name="contact-detail" type="text" class="contact-modal__input" data-contact-detail-input placeholder="010-1234-5678" autocomplete="tel">
+          </div>
+
+          <div class="contact-modal__field">
+            <label class="contact-modal__label" id="cm-referral-label">유입 경로 <span class="contact-modal__hint">(선택)</span></label>
+            <div class="contact-modal__dropdown" data-dropdown>
+              <button type="button" class="contact-modal__dropdown-trigger" data-dropdown-trigger
+                      aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cm-referral-label">
+                <span class="contact-modal__dropdown-value contact-modal__dropdown-value--placeholder" data-dropdown-value>선택해 주세요</span>
+                <span class="contact-modal__dropdown-chevron" aria-hidden="true">
+                  <svg class="contact-modal__dropdown-chevron-down" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <svg class="contact-modal__dropdown-chevron-up" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 15L12 9L18 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </button>
+              <ul class="contact-modal__dropdown-menu" role="listbox" tabindex="-1" data-dropdown-menu aria-labelledby="cm-referral-label">
+                ${referralOptionsHTML}
+              </ul>
+              <input type="hidden" name="referral" data-dropdown-input>
+            </div>
+          </div>
+
+          <label class="contact-modal__consent">
+            <input type="checkbox" name="consent" data-consent required>
+            <span>
+              <a href="privacy-policy.html" target="_blank" rel="noopener">개인정보처리방침</a>에 따른 개인정보 수집·이용에 동의합니다.
+            </span>
+          </label>
 
           <button type="submit" class="contact-modal__submit">문의 보내기</button>
           <p class="contact-modal__fineprint">또는 <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a> 으로 직접 연락 주세요.</p>
@@ -400,6 +478,168 @@
       el.addEventListener("input", () => autosize(el));
     });
 
+    // Conditional contact-detail field: visible only when channel is 전화/카톡
+    const channelInputs = form.querySelectorAll('input[name="preferred-channel"]');
+    const contactDetailWrap = form.querySelector("[data-contact-detail-wrap]");
+    const contactDetailLabel = form.querySelector("[data-contact-detail-label]");
+    const contactDetailInput = form.querySelector("[data-contact-detail-input]");
+    const syncContactDetail = () => {
+      const channel = form.querySelector('input[name="preferred-channel"]:checked')?.value;
+      if (channel === "전화") {
+        contactDetailWrap.hidden = false;
+        contactDetailLabel.textContent = "전화번호";
+        contactDetailInput.placeholder = "010-1234-5678";
+        contactDetailInput.setAttribute("autocomplete", "tel");
+        contactDetailInput.setAttribute("inputmode", "tel");
+      } else if (channel === "카톡") {
+        contactDetailWrap.hidden = false;
+        contactDetailLabel.textContent = "카톡 ID";
+        contactDetailInput.placeholder = "blinkdesign";
+        contactDetailInput.setAttribute("autocomplete", "username");
+        contactDetailInput.removeAttribute("inputmode");
+      } else {
+        contactDetailWrap.hidden = true;
+        contactDetailInput.value = "";
+      }
+    };
+    channelInputs.forEach((el) => el.addEventListener("change", syncContactDetail));
+    syncContactDetail();
+
+    // Custom dropdowns ([data-dropdown]) — accessible button + listbox pattern.
+    // Each dropdown owns a hidden <input> so its value flows into FormData as
+    // if it were a native <select>.
+    form.querySelectorAll("[data-dropdown]").forEach((dd) => {
+      const trigger = dd.querySelector("[data-dropdown-trigger]");
+      const menu = dd.querySelector("[data-dropdown-menu]");
+      const valueEl = dd.querySelector("[data-dropdown-value]");
+      const hidden = dd.querySelector("[data-dropdown-input]");
+      const options = [...dd.querySelectorAll('[role="option"]')];
+      const placeholderText = valueEl.textContent;
+
+      // The menu is position: fixed and sits outside the modal panel's
+      // overflow clip. JS measures the trigger and pins the menu to it,
+      // flipping above when there isn't enough room below.
+      const positionMenu = () => {
+        const rect = trigger.getBoundingClientRect();
+        const gap = 6;
+        const vh = window.innerHeight;
+        const menuH = menu.scrollHeight || 240;
+        const spaceBelow = vh - rect.bottom - gap;
+        const spaceAbove = rect.top - gap;
+        const openUp = spaceBelow < Math.min(menuH, 240) && spaceAbove > spaceBelow;
+
+        menu.style.left = rect.left + "px";
+        menu.style.width = rect.width + "px";
+        if (openUp) {
+          menu.style.top = "auto";
+          menu.style.bottom = (vh - rect.top + gap) + "px";
+          menu.style.maxHeight = Math.min(280, spaceAbove) + "px";
+        } else {
+          menu.style.bottom = "auto";
+          menu.style.top = (rect.bottom + gap) + "px";
+          menu.style.maxHeight = Math.min(280, spaceBelow) + "px";
+        }
+      };
+
+      // Scope dismiss handlers so we can detach them on close.
+      const panel = dd.closest(".contact-modal__panel");
+      let dismissHandlers = [];
+
+      const attachDismissHandlers = () => {
+        const onScrollOrResize = () => close();
+        panel?.addEventListener("scroll", onScrollOrResize, { passive: true });
+        window.addEventListener("resize", onScrollOrResize, { passive: true });
+        dismissHandlers = [
+          () => panel?.removeEventListener("scroll", onScrollOrResize),
+          () => window.removeEventListener("resize", onScrollOrResize),
+        ];
+      };
+      const detachDismissHandlers = () => {
+        dismissHandlers.forEach((fn) => fn());
+        dismissHandlers = [];
+      };
+
+      const open = () => {
+        dd.classList.add("is-open");
+        trigger.setAttribute("aria-expanded", "true");
+        positionMenu();
+        attachDismissHandlers();
+        // Focus the selected option if any, else the first one.
+        const target = options.find((o) => o.getAttribute("aria-selected") === "true") || options[0];
+        // Defer focus until after the transition starts so screen readers
+        // pick up the listbox.
+        requestAnimationFrame(() => target?.focus());
+      };
+      const close = ({ refocus = false } = {}) => {
+        dd.classList.remove("is-open");
+        trigger.setAttribute("aria-expanded", "false");
+        detachDismissHandlers();
+        if (refocus) trigger.focus();
+      };
+      const select = (opt) => {
+        options.forEach((o) => o.setAttribute("aria-selected", o === opt ? "true" : "false"));
+        const value = opt.dataset.value || opt.textContent.trim();
+        valueEl.textContent = value;
+        valueEl.classList.remove("contact-modal__dropdown-value--placeholder");
+        hidden.value = value;
+        close({ refocus: true });
+      };
+
+      trigger.addEventListener("click", () => {
+        if (dd.classList.contains("is-open")) close();
+        else open();
+      });
+
+      trigger.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          open();
+        }
+      });
+
+      options.forEach((opt, i) => {
+        opt.addEventListener("click", () => select(opt));
+        opt.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            options[(i + 1) % options.length].focus();
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            options[(i - 1 + options.length) % options.length].focus();
+          } else if (e.key === "Home") {
+            e.preventDefault();
+            options[0].focus();
+          } else if (e.key === "End") {
+            e.preventDefault();
+            options[options.length - 1].focus();
+          } else if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            select(opt);
+          } else if (e.key === "Escape") {
+            e.preventDefault();
+            close({ refocus: true });
+          } else if (e.key === "Tab") {
+            close();
+          }
+        });
+      });
+
+      // Outside-click closes the menu. Scope to the modal root so it stays
+      // independent of any document-level click handler.
+      root.addEventListener("click", (e) => {
+        if (!dd.contains(e.target) && dd.classList.contains("is-open")) close();
+      });
+
+      // Allow callers to reset the dropdown (used when "선호 연락 수단" flips
+      // hidden state — irrelevant for referral, but cheap to support).
+      dd._reset = () => {
+        options.forEach((o) => o.setAttribute("aria-selected", "false"));
+        valueEl.textContent = placeholderText;
+        valueEl.classList.add("contact-modal__dropdown-value--placeholder");
+        hidden.value = "";
+      };
+    });
+
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
@@ -420,10 +660,66 @@
         }
       }
 
+      // Contact info validation
+      const name = (data.get("name") || "").trim();
+      const email = (data.get("email") || "").trim();
+      const company = (data.get("company") || "").trim();
+      const channel = data.get("preferred-channel") || "";
+      const contactDetail = (data.get("contact-detail") || "").trim();
+      const consent = form.querySelector("[data-consent]")?.checked;
+
+      const focusField = (selector) => {
+        const el = form.querySelector(selector);
+        if (el && typeof el.focus === "function") el.focus();
+      };
+
+      if (!name) { showToast("이름을 입력해 주세요.", "error"); focusField("#cm-name"); return; }
+      if (!email) { showToast("이메일을 입력해 주세요.", "error"); focusField("#cm-email"); return; }
+      // RFC-pragmatic check: non-empty local@domain.tld
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast("이메일 형식이 올바르지 않습니다.", "error");
+        focusField("#cm-email");
+        return;
+      }
+      if (!company) { showToast("회사 / 소속을 입력해 주세요.", "error"); focusField("#cm-company"); return; }
+      if (!channel) {
+        showToast("선호 연락 수단을 선택해 주세요.", "error");
+        focusField('input[name="preferred-channel"]');
+        return;
+      }
+      if ((channel === "전화" || channel === "카톡") && !contactDetail) {
+        const label = channel === "전화" ? "전화번호" : "카톡 ID";
+        showToast(`${label}를 입력해 주세요.`, "error");
+        focusField("#cm-contact-detail");
+        return;
+      }
+      if (!consent) {
+        showToast("개인정보 수집·이용에 동의해 주세요.", "error");
+        focusField("[data-consent]");
+        return;
+      }
+
       const get = (k) => (data.get(k) || "").trim() || "-";
       const getAll = (k) => data.getAll(k).join(", ") || "-";
+      const referral = (data.get("referral") || "").trim();
+
+      const contactLines = [
+        `[이름] ${name}`,
+        `[이메일] ${email}`,
+        `[회사/소속] ${company}`,
+        `[선호 연락 수단] ${channel}`,
+      ];
+      if (contactDetail) {
+        const detailLabel = channel === "전화" ? "전화번호" : channel === "카톡" ? "카톡 ID" : "추가 연락처";
+        contactLines.push(`[${detailLabel}] ${contactDetail}`);
+      }
+      if (referral) contactLines.push(`[유입 경로] ${referral}`);
 
       const lines = [
+        ...contactLines,
+        "",
+        "──────────",
+        "",
         `[작업 종류] ${get("project-type")}`,
         `[웹사이트 목적] ${getAll("purpose")}`,
         `[작업 범위] ${get("scope")}`,
@@ -437,7 +733,7 @@
         get("description"),
       ];
 
-      const subject = `[BlinkDesign 문의] ${data.get("project-type") || ""}`.trim();
+      const subject = `[BlinkDesign 문의] ${name} · ${data.get("project-type") || ""}`.trim();
       const body = lines.join("\n");
       window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     });

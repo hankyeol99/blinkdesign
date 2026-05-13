@@ -18,7 +18,7 @@
 }
 
 .hero__description {
-  margin-top: 0.5rem;
+  margin-top: 0.8rem;
   margin-bottom: 2rem;
   font-size: var(--fs-medium);
   color: var(--color-text);
