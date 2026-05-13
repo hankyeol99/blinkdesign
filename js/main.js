@@ -340,7 +340,7 @@
 
     const radioFields = FORM_GROUPS.map((g) => `
       <fieldset class="contact-modal__field">
-        <legend class="contact-modal__label">${g.label}${g.required ? ' <span class="contact-modal__req" aria-hidden="true">*</span>' : ""}${g.hint ? ` <span class="contact-modal__hint">${g.hint}</span>` : ""}</legend>
+        <legend class="contact-modal__label">${g.label}${g.required ? "" : ' <span class="contact-modal__hint">(선택)</span>'}${g.hint ? ` <span class="contact-modal__hint">${g.hint}</span>` : ""}</legend>
         ${renderChipGroup(g, g.multi ? "checkbox" : "radio")}
       </fieldset>
     `).join("");
@@ -364,39 +364,39 @@
           ${radioFields}
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-reference">참고할 사이트 혹은 레퍼런스가 있다면 알려주세요</label>
+            <label class="contact-modal__label" for="cm-reference">참고할 사이트 혹은 레퍼런스 <span class="contact-modal__hint">(선택)</span></label>
             <textarea id="cm-reference" name="reference" class="contact-modal__input contact-modal__input--autosize" rows="1" placeholder="URL 또는 간단한 설명" data-autosize></textarea>
           </div>
 
           <fieldset class="contact-modal__field">
-            <legend class="contact-modal__label">현재 준비된 자료가 있나요?</legend>
+            <legend class="contact-modal__label">현재 준비된 자료 <span class="contact-modal__hint">(선택)</span></legend>
             ${renderChipGroup(materials, "checkbox")}
           </fieldset>
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-description">프로젝트에 대해 간단히 설명해주세요</label>
+            <label class="contact-modal__label" for="cm-description">프로젝트에 대해 간단히 설명해주세요 <span class="contact-modal__hint">(선택)</span></label>
             <textarea id="cm-description" name="description" class="contact-modal__textarea" rows="5" placeholder="현재 상황, 필요한 페이지, 원하는 분위기, 고민 중인 부분 등을 자유롭게 적어주세요."></textarea>
           </div>
 
           <h3 class="contact-modal__section-heading">연락처 정보</h3>
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-name">이름 <span class="contact-modal__req" aria-hidden="true">*</span></label>
+            <label class="contact-modal__label" for="cm-name">이름</label>
             <input id="cm-name" name="name" type="text" class="contact-modal__input" placeholder="홍길동" autocomplete="name" required>
           </div>
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-email">이메일 <span class="contact-modal__req" aria-hidden="true">*</span></label>
+            <label class="contact-modal__label" for="cm-email">이메일</label>
             <input id="cm-email" name="email" type="email" class="contact-modal__input" placeholder="name@example.com" autocomplete="email" inputmode="email" required>
           </div>
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-company">회사 / 소속 <span class="contact-modal__req" aria-hidden="true">*</span></label>
+            <label class="contact-modal__label" for="cm-company">회사 / 소속</label>
             <input id="cm-company" name="company" type="text" class="contact-modal__input" placeholder="개인은 ‘개인’으로 적어주세요" autocomplete="organization" required>
           </div>
 
           <fieldset class="contact-modal__field">
-            <legend class="contact-modal__label">선호 연락 수단 <span class="contact-modal__req" aria-hidden="true">*</span></legend>
+            <legend class="contact-modal__label">선호 연락 수단</legend>
             <div class="contact-modal__chip-group" role="radiogroup" data-channel-group>
               <label class="contact-modal__chip"><input type="radio" name="preferred-channel" value="이메일" checked><span>이메일</span></label>
               <label class="contact-modal__chip"><input type="radio" name="preferred-channel" value="전화"><span>전화</span></label>
@@ -410,7 +410,7 @@
           </div>
 
           <div class="contact-modal__field">
-            <label class="contact-modal__label" for="cm-referral">유입 경로 <span class="contact-modal__hint">선택 사항</span></label>
+            <label class="contact-modal__label" for="cm-referral">유입 경로 <span class="contact-modal__hint">(선택)</span></label>
             <select id="cm-referral" name="referral" class="contact-modal__select">
               <option value="">선택해 주세요</option>
               <option>검색 (Google · Naver)</option>
@@ -425,7 +425,7 @@
           <label class="contact-modal__consent">
             <input type="checkbox" name="consent" data-consent required>
             <span>
-              <a href="privacy-policy.html" target="_blank" rel="noopener">개인정보처리방침</a>에 따른 개인정보 수집·이용에 동의합니다. <span class="contact-modal__req" aria-hidden="true">*</span>
+              <a href="privacy-policy.html" target="_blank" rel="noopener">개인정보처리방침</a>에 따른 개인정보 수집·이용에 동의합니다.
             </span>
           </label>
 

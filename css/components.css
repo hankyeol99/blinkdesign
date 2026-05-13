@@ -978,12 +978,15 @@
   line-height: var(--lh-relaxed);
 }
 
-/* Auto-grow textarea that mimics a single-line input until typing wraps */
+/* Auto-grow textarea that mimics a single-line input until typing wraps.
+   Padding tightened so the first row sits at the same height as a chip
+   (≈ 36px), keeping the field visually flush with the chip groups above. */
 .contact-modal__input--autosize {
+  padding-block: 7px;
   resize: none;
   overflow: hidden;
   line-height: 1.5;
-  min-height: 42px;
+  min-height: 38px;
 }
 
 .contact-modal__submit {
