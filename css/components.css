@@ -623,7 +623,9 @@
 }
 
 .contact-modal.is-open .contact-modal__panel {
-  transform: translateY(0) scale(1);
+  /* `none` instead of `translateY(0) scale(1)` so the panel doesn't become a
+     containing block for position: fixed descendants (the dropdown menu). */
+  transform: none;
 }
 
 .contact-modal__close {
@@ -861,6 +863,13 @@
   flex-direction: column;
   gap: 22px;
   margin-top: 8px;
+}
+
+.contact-modal__divider {
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background-color: var(--color-gray-200);
 }
 
 .contact-modal__field {
@@ -1106,11 +1115,10 @@
 }
 
 .contact-modal__dropdown-menu {
-  position: absolute;
-  z-index: 10;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
+  /* position / top / left / width are set inline by JS so the menu can
+     escape the modal panel's overflow clip (position: fixed). */
+  position: fixed;
+  z-index: 1100;
   margin: 0;
   padding: 6px;
   list-style: none;
@@ -1124,20 +1132,16 @@
 
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-4px);
   pointer-events: none;
   transition: opacity var(--duration-fast) var(--ease),
-              transform var(--duration-fast) var(--ease),
               visibility 0s linear var(--duration-fast);
 }
 
 .contact-modal__dropdown.is-open .contact-modal__dropdown-menu {
   opacity: 1;
   visibility: visible;
-  transform: none;
   pointer-events: auto;
   transition: opacity var(--duration-fast) var(--ease),
-              transform var(--duration-fast) var(--ease),
               visibility 0s linear 0s;
 }
 

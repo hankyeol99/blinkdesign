@@ -377,6 +377,7 @@
         <p class="contact-modal__lede">아래 정보를 알려주시면 1영업일 내 회신드립니다.</p>
 
         <form class="contact-modal__form" data-contact-form novalidate>
+          <hr class="contact-modal__divider">
           ${radioFields}
 
           <div class="contact-modal__field">
@@ -393,6 +394,8 @@
             <label class="contact-modal__label" for="cm-description">프로젝트에 대해 간단히 설명해주세요 <span class="contact-modal__hint">(선택)</span></label>
             <textarea id="cm-description" name="description" class="contact-modal__textarea" rows="5" placeholder="현재 상황, 필요한 페이지, 원하는 분위기, 고민 중인 부분 등을 자유롭게 적어주세요."></textarea>
           </div>
+
+          <hr class="contact-modal__divider">
 
           <div class="contact-modal__field">
             <label class="contact-modal__label" for="cm-name">이름</label>
@@ -513,9 +516,54 @@
       const options = [...dd.querySelectorAll('[role="option"]')];
       const placeholderText = valueEl.textContent;
 
+      // The menu is position: fixed and sits outside the modal panel's
+      // overflow clip. JS measures the trigger and pins the menu to it,
+      // flipping above when there isn't enough room below.
+      const positionMenu = () => {
+        const rect = trigger.getBoundingClientRect();
+        const gap = 6;
+        const vh = window.innerHeight;
+        const menuH = menu.scrollHeight || 240;
+        const spaceBelow = vh - rect.bottom - gap;
+        const spaceAbove = rect.top - gap;
+        const openUp = spaceBelow < Math.min(menuH, 240) && spaceAbove > spaceBelow;
+
+        menu.style.left = rect.left + "px";
+        menu.style.width = rect.width + "px";
+        if (openUp) {
+          menu.style.top = "auto";
+          menu.style.bottom = (vh - rect.top + gap) + "px";
+          menu.style.maxHeight = Math.min(280, spaceAbove) + "px";
+        } else {
+          menu.style.bottom = "auto";
+          menu.style.top = (rect.bottom + gap) + "px";
+          menu.style.maxHeight = Math.min(280, spaceBelow) + "px";
+        }
+      };
+
+      // Scope dismiss handlers so we can detach them on close.
+      const panel = dd.closest(".contact-modal__panel");
+      let dismissHandlers = [];
+
+      const attachDismissHandlers = () => {
+        const onScrollOrResize = () => close();
+        panel?.addEventListener("scroll", onScrollOrResize, { passive: true });
+        window.addEventListener("resize", onScrollOrResize, { passive: true });
+        dismissHandlers = [
+          () => panel?.removeEventListener("scroll", onScrollOrResize),
+          () => window.removeEventListener("resize", onScrollOrResize),
+        ];
+      };
+      const detachDismissHandlers = () => {
+        dismissHandlers.forEach((fn) => fn());
+        dismissHandlers = [];
+      };
+
       const open = () => {
         dd.classList.add("is-open");
         trigger.setAttribute("aria-expanded", "true");
+        positionMenu();
+        attachDismissHandlers();
         // Focus the selected option if any, else the first one.
         const target = options.find((o) => o.getAttribute("aria-selected") === "true") || options[0];
         // Defer focus until after the transition starts so screen readers
@@ -525,6 +573,7 @@
       const close = ({ refocus = false } = {}) => {
         dd.classList.remove("is-open");
         trigger.setAttribute("aria-expanded", "false");
+        detachDismissHandlers();
         if (refocus) trigger.focus();
       };
       const select = (opt) => {
