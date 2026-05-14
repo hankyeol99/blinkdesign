@@ -1022,6 +1022,22 @@
   border-color: var(--color-gray-700);
 }
 
+.contact-modal__submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.contact-modal__submit:disabled:hover {
+  background-color: var(--color-black);
+  border-color: var(--color-black);
+}
+
+/* Honeypot — visually and assistively hidden so real users never touch it.
+   Bots that fill every field will tick it, and Web3Forms drops those. */
+.contact-modal__honeypot {
+  display: none !important;
+}
+
 .contact-modal__fineprint {
   font-size: var(--fs-small);
   color: var(--color-gray-400);

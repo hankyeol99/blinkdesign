@@ -302,6 +302,10 @@
   /* ---------- Contact modal ---------- */
   const CONTACT_EMAIL = "sk41495133@gmail.com";
   const CONTACT_LINKEDIN = "https://www.linkedin.com/in/hankyeolkim";
+  // Web3Forms is designed to expose this key in the browser; abuse is
+  // mitigated by their server-side rate limits and the honeypot below.
+  const WEB3FORMS_ACCESS_KEY = "0ec6c6e8-a484-4372-8cf2-0efd96c31893";
+  const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 
   let contactModal = null;
   let lastFocusedTrigger = null;
@@ -454,6 +458,11 @@
               <a href="privacy-policy.html" target="_blank" rel="noopener">개인정보처리방침</a>에 따른 개인정보 수집·이용에 동의합니다.
             </span>
           </label>
+
+          <!-- Honeypot for Web3Forms — hidden from real users; bots that
+               auto-fill the form will tick it and Web3Forms drops the
+               submission silently. -->
+          <input type="checkbox" name="botcheck" class="contact-modal__honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
 
           <button type="submit" class="contact-modal__submit">문의 보내기</button>
           <p class="contact-modal__fineprint">또는 <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a> 으로 직접 연락 주세요.</p>
@@ -640,8 +649,23 @@
       };
     });
 
-    form.addEventListener("submit", (e) => {
+    const submitBtn = form.querySelector(".contact-modal__submit");
+    const submitDefaultText = submitBtn.textContent;
+    const setSubmitting = (isSubmitting) => {
+      submitBtn.disabled = isSubmitting;
+      submitBtn.textContent = isSubmitting ? "전송 중..." : submitDefaultText;
+    };
+
+    const resetForm = () => {
+      form.reset();
+      form.querySelectorAll("[data-dropdown]").forEach((dd) => dd._reset?.());
+      form.querySelectorAll("[data-autosize]").forEach((el) => { el.style.height = ""; });
+      syncContactDetail();
+    };
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      if (submitBtn.disabled) return;
 
       const data = new FormData(form);
 
@@ -699,43 +723,66 @@
         return;
       }
 
-      const get = (k) => (data.get(k) || "").trim() || "-";
-      const getAll = (k) => data.getAll(k).join(", ") || "-";
+      // Build the Web3Forms payload with human-readable Korean keys so the
+      // delivered email is immediately scannable.
       const referral = (data.get("referral") || "").trim();
+      const description = (data.get("description") || "").trim();
+      const reference = (data.get("reference") || "").trim();
+      const purpose = data.getAll("purpose").join(", ");
+      const materials = data.getAll("materials").join(", ");
 
-      const contactLines = [
-        `[이름] ${name}`,
-        `[이메일] ${email}`,
-        `[회사/소속] ${company}`,
-        `[선호 연락 수단] ${channel}`,
-      ];
-      if (contactDetail) {
-        const detailLabel = channel === "전화" ? "전화번호" : channel === "카톡" ? "카톡 ID" : "추가 연락처";
-        contactLines.push(`[${detailLabel}] ${contactDetail}`);
+      const payload = {
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: "[BlinkDesign] 새 프로젝트 문의",
+        from_name: name || "웹사이트 문의",
+        // Honeypot — Web3Forms drops the submission if this is truthy.
+        botcheck: data.get("botcheck") || "",
+
+        "이름": name,
+        "이메일": email,
+        "회사/소속": company,
+        "선호 연락 수단": channel,
+        "유입 경로": referral || "선택 안 함",
+
+        "작업 종류": data.get("project-type") || "",
+        "웹사이트 목적": purpose || "선택 안 함",
+        "작업 범위": data.get("scope") || "",
+        "예상 예산": data.get("budget") || "",
+        "희망 일정": data.get("timeline") || "",
+
+        "참고 사이트": reference || "선택 안 함",
+        "준비된 자료": materials || "선택 안 함",
+        "프로젝트 설명": description || "선택 안 함",
+      };
+      // Conditional contact-detail with channel-appropriate label
+      if (channel === "전화" && contactDetail) payload["전화번호"] = contactDetail;
+      else if (channel === "카톡" && contactDetail) payload["카톡 ID"] = contactDetail;
+
+      setSubmitting(true);
+      try {
+        const res = await fetch(WEB3FORMS_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json().catch(() => ({ success: false }));
+
+        if (result.success) {
+          showToast("문의가 정상적으로 접수되었습니다. 빠르게 회신드리겠습니다.", "success");
+          resetForm();
+          setSubmitting(false);
+          closeContactModal();
+        } else {
+          showToast("전송 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.", "error");
+          setSubmitting(false);
+        }
+      } catch (_err) {
+        showToast("전송 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.", "error");
+        setSubmitting(false);
       }
-      if (referral) contactLines.push(`[유입 경로] ${referral}`);
-
-      const lines = [
-        ...contactLines,
-        "",
-        "──────────",
-        "",
-        `[작업 종류] ${get("project-type")}`,
-        `[웹사이트 목적] ${getAll("purpose")}`,
-        `[작업 범위] ${get("scope")}`,
-        `[예상 예산] ${get("budget")}`,
-        `[희망 오픈 일정] ${get("timeline")}`,
-        "",
-        `[참고 사이트] ${get("reference")}`,
-        `[준비된 자료] ${getAll("materials")}`,
-        "",
-        "[프로젝트 설명]",
-        get("description"),
-      ];
-
-      const subject = `[BlinkDesign 문의] ${name} · ${data.get("project-type") || ""}`.trim();
-      const body = lines.join("\n");
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     });
 
     return root;
