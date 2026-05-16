@@ -493,6 +493,18 @@
   vertical-align: middle;
 }
 
+/* Price tag beside a simple-list title — slightly heavier than the meta
+   so the figure reads on its own. */
+.simple-list__title-price {
+  margin-left: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.02em;
+  color: var(--color-text-strong);
+  vertical-align: middle;
+}
+
 /* Inline link wrapping a word inside a simple-list title (e.g. "유지보수" -> Service page) */
 .simple-list__title-link {
   font-weight: var(--fw-semibold);
