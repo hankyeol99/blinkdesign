@@ -372,12 +372,14 @@
     root.innerHTML = `
       <div class="contact-modal__backdrop" data-contact-close></div>
       <div class="contact-modal__panel contact-modal__panel--form">
-        <button type="button" class="contact-modal__close" data-contact-close aria-label="닫기">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-        </button>
-        <h2 class="contact-modal__title" id="contact-modal-title">프로젝트 문의</h2>
+        <header class="contact-modal__header">
+          <h2 class="contact-modal__title" id="contact-modal-title">프로젝트 문의</h2>
+          <button type="button" class="contact-modal__close" data-contact-close aria-label="닫기">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </header>
         <p class="contact-modal__lede">아래 정보를 알려주시면 1영업일 내 회신드립니다.</p>
 
         <form class="contact-modal__form" data-contact-form novalidate>

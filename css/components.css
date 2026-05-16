@@ -628,10 +628,16 @@
   transform: none;
 }
 
+.contact-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
 .contact-modal__close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
+  flex-shrink: 0;
   width: 36px;
   height: 36px;
   display: inline-flex;
@@ -658,7 +664,7 @@
   font-size: 1.375rem;
   font-weight: var(--fw-semibold);
   color: var(--color-black);
-  margin-bottom: 6px;
+  margin: 0;
 }
 
 .contact-modal__lede {
@@ -1251,6 +1257,49 @@
 
 @media (max-width: 480px) {
   .contact-modal__panel--form { padding: 28px 20px 24px; }
+}
+
+/* ──── Mobile: full-screen modal with sticky header ──── */
+@media (max-width: 640px) {
+  .contact-modal { padding: 0; }
+
+  .contact-modal__panel--form {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* The header sticks to the top of the scrollable panel so 프로젝트 문의
+     and the close button stay reachable while the form scrolls. */
+  .contact-modal__header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin: 0;
+    padding: 14px 20px;
+    background-color: var(--color-white);
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+
+  .contact-modal__lede {
+    margin: 0;
+    padding: 18px 20px 0;
+  }
+
+  .contact-modal__form {
+    margin-top: 8px;
+    padding: 0 20px 28px;
+  }
+
+  /* The scrollbar track margin from desktop assumed rounded corners — drop
+     it on mobile so the thumb can reach the very top/bottom. */
+  .contact-modal__panel--form::-webkit-scrollbar-track {
+    margin-block: 0;
+  }
 }
 
 /* ==========================================================================
