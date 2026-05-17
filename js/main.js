@@ -300,7 +300,7 @@
   };
 
   /* ---------- Contact modal ---------- */
-  const CONTACT_EMAIL = "sk41495133@gmail.com";
+  const CONTACT_EMAIL = "khk@blinkdesign.kr";
   const CONTACT_LINKEDIN = "https://www.linkedin.com/in/hankyeolkim";
   // Web3Forms is designed to expose this key in the browser; abuse is
   // mitigated by their server-side rate limits and the honeypot below.
