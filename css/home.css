@@ -247,6 +247,12 @@
   will-change: transform;                     /* hint GPU compositing */
 }
 
+/* Long full-scroll previews (Lumen) — anchor the crop to the top so the
+   page hero stays in frame instead of the middle of the body. */
+.preview-card__image[src*="lumen-"] {
+  object-position: top;
+}
+
 .preview-card:hover .preview-card__image {
   transform: scale(1.04);
 }
